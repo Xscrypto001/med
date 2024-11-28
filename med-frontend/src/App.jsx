@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './components/login';
+import HealthcareFundraiserDashboard from './pages/Dashboard';
+import './index.css';
+import Signup from './components/register';
+//import Dashboard from './components/Dashboard';
+import PayoutPage from './pages/Payout';
+import MissionPage from './pages/info';
+import HealthCampaignDetailPage from './pages/payment_page';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+     <Router>
+       <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard/donations" element={<  HealthcareFundraiserDashboard />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/payouts" element={<PayoutPage />} />
+        <Route path="/donate" element={<HealthCampaignDetailPage />} />
+        <Route path="/info" element={<MissionPage />} />
 
-export default App
+
+
+      {/*   <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/signup" element={<Signup />} />
+        {/*<Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/payout" element={<Payout />} />*/}
+      </Routes> 
+     </Router>
+  );
+};
+
+export default App;
