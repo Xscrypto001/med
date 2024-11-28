@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+
 import { 
   Heart, 
   Share2, 
@@ -10,83 +12,34 @@ import {
   DollarSign 
 } from 'lucide-react';
 
-// Paystack SDK Script
-import { usePaystackPayment } from 'react-paystack';
-
 const HealthCampaignDetailPage = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [donationAmount, setDonationAmount] = useState(0);
-  const [campaign, setCampaign] = useState(null);
 
-  // Paystack public key (replace with your actual public key)
-  const PAYSTACK_PUBLIC_KEY = "pk_test_your_public_key";
-
-  // Fetch the campaign data from the API (mocked here, replace with real API call)
-  useEffect(() => {
-    // This is where you would fetch the real campaign data from your API
-    const fetchCampaignData = async () => {
-      const data = {
-        title: "Innovative Telehealth Solutions",
-        creator: "Dr. Maria Chen",
-        avatar: "/api/placeholder/80/80",
-        goal: 75000,
-        raised: 47500,
-        backers: 312,
-        daysLeft: 28,
-        category: "Healthcare Technology",
-        description: "Developing AI-powered telehealth platforms to improve remote medical diagnostics and patient care accessibility in underserved communities.",
-        highlights: [
-          "AI-driven diagnostic screening",
-          "Multilingual patient support",
-          "Low-bandwidth mobile health solutions"
-        ]
-      };
-      setCampaign(data);
-    };
-
-    fetchCampaignData();
-  }, []);
-
-  if (!campaign) {
-    return <div>Loading campaign data...</div>; // Loading state while campaign data is fetched
-  }
+  // Sample health-focused campaign data
+  const campaign = {
+    title: "Innovative Telehealth Solutions",
+    creator: "Dr. Maria Chen",
+    avatar: "/api/placeholder/80/80",
+    goal: 75000,
+    raised: 47500,
+    backers: 312,
+    daysLeft: 28,
+    category: "Healthcare Technology",
+    description: "Developing AI-powered telehealth platforms to improve remote medical diagnostics and patient care accessibility in underserved communities.",
+    highlights: [
+      "AI-driven diagnostic screening",
+      "Multilingual patient support",
+      "Low-bandwidth mobile health solutions"
+    ]
+  };
 
   const progressPercentage = Math.min((campaign.raised / campaign.goal) * 100, 100);
 
-  // Paystack configuration
-  const config = {
-    reference: `healthCampaign_${Date.now()}`, // Unique reference for each transaction
-    email: "donor@example.com", // Replace with actual donor email
-    amount: donationAmount * 100, // Convert to kobo (smallest unit for NGN)
-    publicKey: PAYSTACK_PUBLIC_KEY,
-  };
-
-  // Payment Success Callback
-  const onSuccess = (reference) => {
-    alert("Donation Successful! Reference: " + reference.reference);
-    setShowPaymentModal(false);
-
-    // You can call your backend to save the transaction details here
-    console.log("Transaction successful:", reference);
-  };
-
-  // Payment Failure Callback
-  const onClose = () => {
-    alert("Transaction Cancelled!");
-    setShowPaymentModal(false);
-  };
-
-  // Initialize Paystack Payment
-  const initializePayment = usePaystackPayment(config);
-
   const handleDonate = () => {
-    if (donationAmount <= 0) {
-      alert("Please enter a valid donation amount!");
-      return;
-    }
-
-    // Initialize payment
-    initializePayment(onSuccess, onClose);
+    // Placeholder for payment integration
+    alert('Payment processing would occur here');
+    setShowPaymentModal(false);
   };
 
   return (
@@ -95,10 +48,15 @@ const HealthCampaignDetailPage = () => {
       <nav className="sticky top-0 z-10 bg-white shadow-sm flex justify-between items-center px-6 py-4 border-b">
         <div className="flex items-center space-x-2">
           <Stethoscope className="text-blue-600" />
-          <h1 className="text-2xl font-bold text-blue-600">HealthInnovate</h1>
+          <h1 className="text-2xl font-bold text-blue-600">
+            HealthInnovate
+          </h1>
         </div>
         <div className="flex space-x-4">
-          <button className="text-gray-700 hover:text-blue-600 transition-colors">Explore</button>
+          <button className="text-gray-700 hover:text-blue-600 transition-colors">
+            <Link to='info'>
+            Explore
+            </Link></button>
           <button className="text-gray-700 hover:text-blue-600 transition-colors">Create</button>
           <button className="text-gray-700 hover:text-blue-600 transition-colors">About</button>
         </div>
@@ -145,7 +103,7 @@ const HealthCampaignDetailPage = () => {
             <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
               <div 
                 className="bg-gradient-to-r from-blue-500 to-teal-400 h-full transition-all duration-500" 
-                style={{width: `${progressPercentage}%`} }
+                style={{width: `${progressPercentage}%`}}
               />
             </div>
             <div className="flex justify-between mt-2 text-sm text-gray-600">
@@ -168,7 +126,9 @@ const HealthCampaignDetailPage = () => {
 
           {/* Campaign Description */}
           <div className="mt-6 bg-gray-50 rounded-xl p-4">
-            <h3 className="text-xl font-semibold mb-4 text-blue-700">Campaign Overview</h3>
+            <h3 className="text-xl font-semibold mb-4 text-blue-700">
+              Campaign Overview
+            </h3>
             <p className="text-gray-700 leading-relaxed">{campaign.description}</p>
             
             <div className="mt-4">
@@ -184,12 +144,66 @@ const HealthCampaignDetailPage = () => {
           </div>
         </div>
 
-        {/* Sidebar */}
-        {/* ... Other sidebar components remain unchanged ... */}
+        {/* Sidebar - Explore More & Information */}
+        <div className="space-y-6">
+          {/* More Campaigns */}
+          <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
+            <h3 className="text-xl font-bold mb-4 flex items-center text-blue-700">
+              <Users className="mr-2 text-blue-500" /> 
+              More Health Initiatives
+            </h3>
+            <div className="space-y-4">
+              {[1, 2, 3].map((campaign) => (
+                <div 
+                  key={campaign} 
+                  className="bg-gray-100 rounded-lg p-3 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <p className="font-semibold text-sm text-gray-800">Mental Health Tech Platform</p>
+                  <div className="flex justify-between text-xs text-gray-600 mt-1">
+                    <span>$35,200 raised</span>
+                    <span>18 days left</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
+          {/* Info & Confirmation */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+            <div className="flex items-center mb-4">
+              <CheckCircle className="mr-2 text-blue-600" />
+              <h3 className="font-bold text-blue-800">Campaign Promise</h3>
+            </div>
+            <p className="text-sm text-gray-700 mb-4">
+              By supporting this campaign, you'll receive exclusive updates 
+              and insights directly from {campaign.creator} about the project's progress.
+            </p>
+            <div className="bg-blue-100 p-3 rounded-lg">
+              <p className="text-xs text-blue-900 italic">
+                "Together, we can revolutionize healthcare accessibility and technology." 
+                - {campaign.creator}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Payment Modal */}
+      {/* Footer */}
+      <footer className="bg-gray-100 py-8 border-t">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center space-x-6 mb-4 text-gray-600">
+            <a href="#" className="hover:text-blue-600 transition-colors">About</a>
+            <a href="#" className="hover:text-blue-600 transition-colors">Contact</a>
+            <a href="#" className="hover:text-blue-600 transition-colors">Terms</a>
+            <a href="#" className="hover:text-blue-600 transition-colors">Privacy</a>
+          </div>
+          <p className="text-sm text-gray-500 text-center">
+            © 2024 HealthInnovate. Empowering Medical Breakthroughs.
+          </p>
+        </div>
+      </footer>
+
+      {/* Payment Modal (Placeholder) */}
       {showPaymentModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-8 w-96 shadow-2xl border border-blue-200">
