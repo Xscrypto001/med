@@ -1,28 +1,24 @@
-
-
 import React, { useState } from 'react';
 import { 
-  Heart, 
-  Share2, 
-  PlusCircle, 
-  Copy, 
-  Edit, 
-  DollarSign, 
-  Target, 
-  Users, 
-  Link 
+  Building, // Use Building as a substitute for Bank
+  Wallet, 
+  Send, 
+  Clock, 
+  FileText, 
+  CreditCard, 
+  DollarSign
 } from 'lucide-react';
-import Navbar  from './Dashboard';
+import Navbar from './Dashboard';
 
 const PayoutPage = () => {
     const [activeTab, setActiveTab] = useState('pending');
     const [payoutMethod, setPayoutMethod] = useState('bank');
-  
+
     const payoutMethods = [
       { 
         id: 'bank', 
         name: 'Bank Transfer', 
-        icon: <Bank className="mr-3" />,
+        icon: <Building className="mr-3" />, // Use Building here
         details: 'Transfer directly to your bank account'
       },
       { 
@@ -38,7 +34,7 @@ const PayoutPage = () => {
         details: 'Instant transfer to your linked card'
       }
     ];
-  
+
     const payoutHistory = [
       { 
         id: "PO-001", 
@@ -62,7 +58,7 @@ const PayoutPage = () => {
         status: "Pending" 
       }
     ];
-  
+
     return (
       <div className="container mx-auto px-4 py-8 bg-gray-100 min-h-screen">
         <div className="max-w-4xl mx-auto">
@@ -90,11 +86,11 @@ const PayoutPage = () => {
               </div>
             </div>
           </div>
-  
+
           {/* Payout Methods */}
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <Bank className="mr-3 text-blue-600" />
+              <Building className="mr-3 text-blue-600" /> {/* Update here */}
               Payout Methods
             </h2>
             <div className="grid md:grid-cols-3 gap-4">
@@ -123,7 +119,7 @@ const PayoutPage = () => {
               ))}
             </div>
           </div>
-  
+
           {/* Payout History */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex justify-between items-center mb-4">
@@ -183,8 +179,6 @@ const PayoutPage = () => {
         </div>
       </div>
     );
-  };
+};
 
-
-  export default PayoutPage;
-
+export default PayoutPage;
