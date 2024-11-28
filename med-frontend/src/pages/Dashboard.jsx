@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom';
-
 import React, { useState } from 'react';
 import { 
   Heart, 
@@ -10,88 +8,97 @@ import {
   DollarSign, 
   Target, 
   Users, 
-  Award,
-  Send,
-  RefreshCw,
-  ArrowRight
-  
+  Link 
 } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from "axios"; // For API requests
 
+import { useState, useEffect } from "react";
+import { Award, Bank, Send, RefreshCw, ArrowRight } from "lucide-react"; // Icons from lucide-react
+import axios from "axios";
 
 const TransactionsList = () => {
-    const transactions = [
-      { 
-        id: "TX-001", 
-        amount: 500.00, 
-        country: "USA", 
-        status: "Completed", 
-        date: "2024-02-15",
-        message: "Support for medical treatment",
-        icon: <Award className="text-green-600" />
-      },
-      { 
-        id: "TX-002", 
-        amount: 1250.50, 
-        country: "Canada", 
-        status: "Processing", 
-        date: "2024-02-14",
-        message: "Hospital equipment fund",
-      },
-      { 
-        id: "TX-003", 
-        amount: 750.25, 
-        country: "UK", 
-        status: "Pending", 
-        date: "2024-02-13",
-        message: "Emergency surgery support",
-        icon: <Send className="text-purple-600" />
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await axios.get("http://176.16.0.95:8000/api/transactions/"); // Replace with your API endpoint
+        setTransactions(response.data);
+      } catch (err) {
+        setError("Failed to fetch transactions. Please try again.");
+      } finally {
+        setLoading(false);
       }
-    ];
-  
-    return (
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold flex items-center">
-            <RefreshCw className="mr-3 text-blue-600" />
-            Recent Transactions
-          </h3>
-          <button className="text-blue-600 hover:underline text-sm flex items-center">
-            View All <ArrowRight className="ml-2" size={16} />
-          </button>
-        </div>
-        <div className="space-y-4">
-          {transactions.map((transaction) => (
-            <div 
-              key={transaction.id} 
-              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
-            >
-              <div className="flex items-center space-x-4">
-                {transaction.icon}
-                <div>
-                  <p className="font-medium text-sm">{transaction.message}</p>
-                  <p className="text-xs text-gray-500">
-                    {transaction.id} · {transaction.country} · {transaction.date}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-green-600">
-                  ${transaction.amount.toFixed(2)}
-                </p>
-                <p className={`text-xs ${
-                  transaction.status === 'Completed' ? 'text-green-600' : 
-                  transaction.status === 'Processing' ? 'text-yellow-600' : 
-                  'text-gray-500'
-                }`}>
-                  {transaction.status}
+    };
+
+    fetchTransactions();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center text-gray-600">Loading transactions...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-600">{error}</div>;
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold flex items-center">
+          <RefreshCw className="mr-3 text-blue-600" />
+          Recent Transactions
+        </h3>
+        <button className="text-blue-600 hover:underline text-sm flex items-center">
+          View All <ArrowRight className="ml-2" size={16} />
+        </button>
+      </div>
+      <div className="space-y-4">
+        {transactions.map((transaction) => (
+          <div 
+            key={transaction.id} 
+            className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+          >
+            <div className="flex items-center space-x-4">
+              {/* Render an icon dynamically based on transaction type */}
+              {transaction.type === "Award" ? (
+                <Award className="text-green-600" />
+              ) : transaction.type === "Bank" ? (
+                <Bank className="text-blue-600" />
+              ) : (
+                <Send className="text-purple-600" />
+              )}
+              <div>
+                <p className="font-medium text-sm">{transaction.message}</p>
+                <p className="text-xs text-gray-500">
+                  {transaction.id} · {transaction.country} · {transaction.date}
                 </p>
               </div>
             </div>
-          ))}
-        </div>
+            <div className="text-right">
+              <p className="font-bold text-green-600">
+                ${transaction.amount.toFixed(2)}
+              </p>
+              <p className={`text-xs ${
+                transaction.status === "Completed"
+                  ? "text-green-600"
+                  : transaction.status === "Processing"
+                  ? "text-yellow-600"
+                  : "text-gray-500"
+              }`}>
+                {transaction.status}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
-    );
-  };
+    </div>
+  );
+};
+
 
 // Visa and Mastercard SVG Icons
 const VisaIcon = () => (
@@ -110,13 +117,49 @@ const MastercardIcon = () => (
   </svg>
 );
 
-// Campaign Creation Modal
-const CreateCampaignModal = ({ isOpen, onClose }) => {
+
+
+const CreateCampaignModal = ({ isOpen, onClose, onCampaignCreated }) => {
   const [campaignDetails, setCampaignDetails] = useState({
-    title: '',
-    goal: '',
-    description: ''
+    title: "",
+    goal: "",
+    description: "",
   });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Handle form submission
+  const handleCreateCampaign = async () => {
+    if (!campaignDetails.title || !campaignDetails.goal || !campaignDetails.description) {
+      setError("All fields are required.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.post("176.0.16.0.95:8000/api/campaigns/create/", {
+        name: campaignDetails.title,
+        target_amount: campaignDetails.goal,
+        description: campaignDetails.description,
+      });
+
+      // Notify parent component about the new campaign
+      if (onCampaignCreated) {
+        onCampaignCreated(response.data);
+      }
+
+      // Reset form and close modal
+      setCampaignDetails({ title: "", goal: "", description: "" });
+      onClose();
+    } catch (err) {
+      setError("Failed to create campaign. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -128,39 +171,50 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
           Create New Campaign
         </h2>
         <div className="space-y-4">
-          <input 
-            type="text" 
-            placeholder="Campaign Title" 
+          <input
+            type="text"
+            placeholder="Campaign Title"
             className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
             value={campaignDetails.title}
-            onChange={(e) => setCampaignDetails({...campaignDetails, title: e.target.value})}
+            onChange={(e) =>
+              setCampaignDetails({ ...campaignDetails, title: e.target.value })
+            }
           />
-          <input 
-            type="number" 
-            placeholder="Fundraising Goal ($)" 
+          <input
+            type="number"
+            placeholder="Fundraising Goal ($)"
             className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
             value={campaignDetails.goal}
-            onChange={(e) => setCampaignDetails({...campaignDetails, goal: e.target.value})}
+            onChange={(e) =>
+              setCampaignDetails({ ...campaignDetails, goal: e.target.value })
+            }
           />
-          <textarea 
-            placeholder="Campaign Description" 
+          <textarea
+            placeholder="Campaign Description"
             className="w-full p-3 border rounded-lg h-32 focus:ring-2 focus:ring-blue-500"
             value={campaignDetails.description}
-            onChange={(e) => setCampaignDetails({...campaignDetails, description: e.target.value})}
+            onChange={(e) =>
+              setCampaignDetails({
+                ...campaignDetails,
+                description: e.target.value,
+              })
+            }
           />
+          {error && (
+            <p className="text-red-500 text-sm font-semibold">{error}</p>
+          )}
           <div className="flex space-x-4">
-            <button 
+            <button
               className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
-              onClick={() => {
-                // TODO: Add campaign creation logic
-                onClose();
-              }}
+              onClick={handleCreateCampaign}
+              disabled={isLoading}
             >
-              Create Campaign
+              {isLoading ? "Creating..." : "Create Campaign"}
             </button>
-            <button 
+            <button
               className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition"
               onClick={onClose}
+              disabled={isLoading}
             >
               Cancel
             </button>
@@ -170,6 +224,7 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
     </div>
   );
 };
+
 
 // Navbar Component
 export const Navbar = () => {
@@ -202,7 +257,8 @@ export const Navbar = () => {
               Create Campaign
             </button>
             <div className="bg-white/20 px-3 py-1 rounded-full text-white text-sm">
-              John Doe
+      Stanley Ondieki
+
             </div>
           </div>
         </div>
@@ -214,11 +270,12 @@ export const Navbar = () => {
     </>
   );
 };
+import { useState } from "react";
+import { Target, CheckCircle2, Copy, Edit, DollarSign, Users, Share2 } from "lucide-react"; // Icons from lucide-react
 
-// Campaign Card Component
-const CampaignCard = () => {
+const CampaignCard = ({ campaign }) => {
   const [copied, setCopied] = useState(false);
-  const campaignLink = 'https://healthhope.org/campaigns/john-doe-uuid';
+  const campaignLink = `http:///176.16.0.95:8000/campaigns/${campaign.id}`; // Replace with your dynamic link logic
 
   const copyLink = () => {
     navigator.clipboard.writeText(campaignLink);
@@ -231,48 +288,54 @@ const CampaignCard = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold flex items-center">
           <Target className="mr-3 text-blue-600" size={24} />
-          Heart Surgery Fund
+          {campaign.name}
         </h2>
         <div className="flex items-center space-x-2">
-          <button 
+          <button
             className="text-gray-500 hover:text-blue-600 transition"
             onClick={copyLink}
           >
-            {copied ? <CheckCircle2 size={20} className="text-green-600" /> : <Copy size={20} />}
+            {copied ? (
+              <CheckCircle2 size={20} className="text-green-600" />
+            ) : (
+              <Copy size={20} />
+            )}
           </button>
           <button className="text-gray-500 hover:text-blue-600 transition">
             <Edit size={20} />
           </button>
         </div>
       </div>
-      
+
       <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-        <div 
-          className="bg-blue-600 h-full transition-all duration-500 ease-in-out" 
-          style={{width: '65%'}}
+        <div
+          className="bg-blue-600 h-full transition-all duration-500 ease-in-out"
+          style={{
+            width: `${(campaign.amount_raised / campaign.target_amount) * 100}%`,
+          }}
         />
       </div>
-      
+
       <div className="flex justify-between text-sm text-gray-600">
         <div className="flex items-center space-x-2">
           <DollarSign size={16} />
-          <span>Raised: $32,500</span>
+          <span>Raised: ${campaign.amount_raised}</span>
         </div>
         <div className="flex items-center space-x-2">
           <Target size={16} />
-          <span>Goal: $50,000</span>
+          <span>Goal: ${campaign.target_amount}</span>
         </div>
       </div>
-      
+
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2 text-sm text-gray-600">
           <Users size={16} />
-          <span>42 Donors</span>
+          <span>{campaign.donor_count} Donors</span>
         </div>
         <div className="flex items-center space-x-2">
           <Share2 size={16} className="text-gray-500" />
-          <a 
-            href={campaignLink} 
+          <a
+            href={campaignLink}
             className="text-blue-600 text-sm hover:underline"
           >
             Share Campaign
@@ -282,6 +345,8 @@ const CampaignCard = () => {
     </div>
   );
 };
+
+
 
 // Payment Methods Component
 const PaymentMethods = () => {
