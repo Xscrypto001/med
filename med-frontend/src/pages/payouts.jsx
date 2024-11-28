@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import Navbar  from './Dashboard';
 
-export const PayoutPage = () => {
+const PayoutPage = () => {
     const [activeTab, setActiveTab] = useState('pending');
     const [payoutMethod, setPayoutMethod] = useState('bank');
   
@@ -184,3 +184,7 @@ export const PayoutPage = () => {
       </div>
     );
   };
+
+
+  export default PayoutPage;
+

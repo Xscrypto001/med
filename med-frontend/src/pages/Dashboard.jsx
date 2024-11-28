@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import React, { useState } from 'react';
 import { 
   Heart, 
@@ -8,9 +10,12 @@ import {
   DollarSign, 
   Target, 
   Users, 
-  Link 
+  Award,
+  Send,
+  RefreshCw,
+  ArrowRight
+  
 } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
 
 
 const TransactionsList = () => {
@@ -31,7 +36,6 @@ const TransactionsList = () => {
         status: "Processing", 
         date: "2024-02-14",
         message: "Hospital equipment fund",
-        icon: <Bank className="text-blue-600" />
       },
       { 
         id: "TX-003", 

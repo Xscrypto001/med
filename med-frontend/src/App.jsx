@@ -5,7 +5,7 @@ import HealthcareFundraiserDashboard from './pages/Dashboard';
 import './index.css';
 import Signup from './components/register';
 //import Dashboard from './components/Dashboard';
-import PayoutPage from './pages/Payout';
+import PayoutPage from './pages/payouts';
 import MissionPage from './pages/info';
 import HealthCampaignDetailPage from './pages/payment_page';
 
